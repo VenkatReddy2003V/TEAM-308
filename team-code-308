@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_ARTIFACTS 100
+
+typedef struct {
+    char name[100];
+    char type[50];
+    char details[256];
+    int score;
+} Artifact;
+
+typedef struct {
+    Artifact evidenceList[MAX_ARTIFACTS];
+    int count;
+} DigitalForensicsTool;
+
+void importEvidence(DigitalForensicsTool *tool, const char *fileName) {
+    printf("Importing data from: %s\n", fileName);
+    strcpy(tool->evidenceList[tool->count].name, "log1.txt");
+    strcpy(tool->evidenceList[tool->count].type, "Log");
+    strcpy(tool->evidenceList[tool->count].details, "Suspicious login detected");
+    tool->evidenceList[tool->count++].score = 80;
+
+    strcpy(tool->evidenceList[tool->count].name, "registry.dat");
+    strcpy(tool->evidenceList[tool->count].type, "Registry");
+    strcpy(tool->evidenceList[tool->count].details, "Auto-run malware key");
+    tool->evidenceList[tool->count++].score = 90;
+
+    strcpy(tool->evidenceList[tool->count].name, "network.pcap");
+    strcpy(tool->evidenceList[tool->count].type, "Network");
+    strcpy(tool->evidenceList[tool->count].details, "Unusual port scan");
+    tool->evidenceList[tool->count++].score = 70;
+
+    strcpy(tool->evidenceList[tool->count].name, "system32.dll");
+    strcpy(tool->evidenceList[tool->count].type, "File");
+    strcpy(tool->evidenceList[tool->count].details, "Modified system DLL");
+    tool->evidenceList[tool->count++].score = 85;
+}
+
+void analyzeEvidence(DigitalForensicsTool *tool) {
+    printf("\nAnalyzing Evidence...\n");
+    for (int i = 0; i < tool->count; i++) {
+        if (tool->evidenceList[i].score > 75) {
+            printf("** ALERT ** High anomaly score detected:\n");
+        }
+        printf("Name: %s, Type: %s, Details: %s, Score: %d\n",
+               tool->evidenceList[i].name,
+               tool->evidenceList[i].type,
+               tool->evidenceList[i].details,
+               tool->evidenceList[i].score);
+    }
+}
+
+void exportReport(DigitalForensicsTool *tool, const char *format) {
+    printf("\nExporting report in %s format...\n", format);
+    if (strcmp(format, "json") == 0) {
+        for (int i = 0; i < tool->count; i++) {
+            printf("{\"name\":\"%s\", \"type\":\"%s\", \"details\":\"%s\", \"score\":%d}\n",
+                   tool->evidenceList[i].name,
+                   tool->evidenceList[i].type,
+                   tool->evidenceList[i].details,
+                   tool->evidenceList[i].score);
+        }
+    } else if (strcmp(format, "csv") == 0) {
+        printf("Name,Type,Details,Score\n");
+        for (int i = 0; i < tool->count; i++) {
+            printf("%s,%s,%s,%d\n",
+                   tool->evidenceList[i].name,
+                   tool->evidenceList[i].type,
+                   tool->evidenceList[i].details,
+                   tool->evidenceList[i].score);
+        }
+    } else if (strcmp(format, "pdf") == 0) {
+        printf("Simulated PDF Export:\n");
+        for (int i = 0; i < tool->count; i++) {
+            printf("Artifact: Name: %s, Type: %s, Details: %s, Score: %d\n",
+                   tool->evidenceList[i].name,
+                   tool->evidenceList[i].type,
+                   tool->evidenceList[i].details,
+                   tool->evidenceList[i].score);
+        }
+    } else {
+        printf("Unsupported format.\n");
+    }
+}
+
+int main() {
+    char format[10];
+    DigitalForensicsTool tool = { .count = 0 };
+
+    printf("** Cyber Triage Tool **\n");
+    importEvidence(&tool, "sample_image.raw");
+    analyzeEvidence(&tool);
+
+    printf("\nChoose export format (json/csv/pdf): ");
+    scanf("%s", format);
+    exportReport(&tool, format);
+
+    return 0;
+}
